@@ -1,0 +1,104 @@
+services:
+  couchdb_node1:
+    image: couchdb:latest
+    container_name: couchdb_node1
+    restart: always
+    ports:
+      - "${PORT_BASE}1:5984"
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+      - COUCHDB_SECRET=${COUCHDB_SECRET}
+      - NODENAME=couchdb_node1.${COMPOSE_PROJECT_NAME}
+      - ERL_FLAGS="-setcookie ${COUCHDB_COOKIE}"
+    volumes:
+      - ./data/node1:/opt/couchdb/data
+      - ./cfg/node1:/opt/couchdb/etc/local.d
+    networks:
+      couchdb_network:
+        aliases:
+          - couchdb_node1.${COMPOSE_PROJECT_NAME}
+
+  couchdb_node2:
+    image: couchdb:latest
+    container_name: couchdb_node2
+    restart: always
+    ports:
+      - "${PORT_BASE}2:5984"
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+      - COUCHDB_SECRET=${COUCHDB_SECRET}
+      - NODENAME=couchdb_node2.${COMPOSE_PROJECT_NAME}
+      - ERL_FLAGS="-setcookie ${COUCHDB_COOKIE}"
+    volumes:
+      - ./data/node2:/opt/couchdb/data
+      - ./cfg/node2:/opt/couchdb/etc/local.d
+    networks:
+      couchdb_network:
+        aliases:
+          - couchdb_node2.${COMPOSE_PROJECT_NAME}
+
+  couchdb_node3:
+    image: couchdb:latest
+    container_name: couchdb_node3
+    restart: always
+    ports:
+      - "${PORT_BASE}3:5984"
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+      - COUCHDB_SECRET=${COUCHDB_SECRET}
+      - NODENAME=couchdb_node3.${COMPOSE_PROJECT_NAME}
+      - ERL_FLAGS="-setcookie ${COUCHDB_COOKIE}"
+    volumes:
+      - ./data/node3:/opt/couchdb/data
+      - ./cfg/node3:/opt/couchdb/etc/local.d
+    networks:
+      couchdb_network:
+        aliases:
+          - couchdb_node3.${COMPOSE_PROJECT_NAME}
+
+  backend:
+    image: node:14
+    container_name: backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: bash -c "npm install && npm start"
+    depends_on:
+      - couchdb_node1
+      - couchdb_node2
+      - couchdb_node3
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - COUCHDB_USER=${BACKEND_USER:-user}
+      - COUCHDB_PASSWORD=${BACKEND_PASSWORD:-password}
+      - PORT=3000
+    networks:
+      - couchdb_network
+
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - couchdb_network
+
+networks:
+  couchdb_network:
+    driver: bridge
+
+volumes:
+  data-node1:
+  cfg-node1:
+  data-node2:
+  cfg-node2:
+  data-node3:
+  cfg-node3:

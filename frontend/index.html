@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CouchDB Cluster Demo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>CouchDB Cluster Demo</h1>
+
+    <div class="container">
+        <div class="card">
+            <h2>Add Item to Inventory</h2>
+            <input type="text" id="item" placeholder="Item Name" />
+            <input type="number" id="quantity" placeholder="Quantity" />
+            <label for="node">Select Node:</label>
+            <select id="node">
+                <option value="node1">Node 1</option>
+                <option value="node2">Node 2</option>
+                <option value="node3">Node 3</option>
+            </select>
+            <button onclick="addItem()">Add Item</button>
+
+            <div id="result"></div>
+            <div id="error" class="error"></div>
+        </div>
+
+        <div class="card">
+            <h2>Get Inventory from Node</h2>
+            <label for="nodeRead">Select Node:</label>
+            <select id="nodeRead">
+                <option value="node1">Node 1</option>
+                <option value="node2">Node 2</option>
+                <option value="node3">Node 3</option>
+            </select>
+            <button onclick="getInventory()">Get Inventory</button>
+            <div id="inventoryResult"></div>
+            <div id="inventoryError" class="error"></div>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>
